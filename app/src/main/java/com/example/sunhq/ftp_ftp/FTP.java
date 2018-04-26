@@ -90,7 +90,12 @@ public class FTP {
 		if (files.length == 0) {
 			listener.onDownLoadProgress(MainActivity.FTP_FILE_NOTEXISTS, 0, null);
 			return;
+		}else{
+			for (FTPFile file : files) {
+				System.out.println(file.getName());
+			}
 		}
+
 
 		//创建本地文件夹
 		File mkFile = new File(localPath);
@@ -160,7 +165,7 @@ public class FTP {
 	 */
 	public void openConnect() throws IOException {
 		// 中文转码
-		ftpClient.setControlEncoding("GBK");
+		ftpClient.setControlEncoding("GBK");  // 此处编码格式与服务器相同
 		int reply; // 服务器响应值
 		// 连接至服务器
 		ftpClient.connect(hostName, serverPort);

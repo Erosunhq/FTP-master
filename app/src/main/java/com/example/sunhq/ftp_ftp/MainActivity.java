@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                             //name = new String(name.getBytes(LOCAL_CHARSET),
                             //        SERVER_CHARSET);
                             //单文件下载 (服务器上文件的路径, 存放的本地路径, 下载到本地后要保存的文件名称(可以跟源文件名不一样), 下载监听器)
-                            new FTP().downloadSingleFile("/FTP/"+name,"/mnt/sdcard/sunhq/",name,new FTP.DownLoadProgressListener(){
+                            new FTP().downloadSingleFile("/FTP/","/mnt/sdcard/sunhq/",name,new FTP.DownLoadProgressListener(){
                             //new FTP().downloadSingleFile("/FTP/a2.JPG","/mnt/sdcard/sunhq/","back11.JPG",new FTP.DownLoadProgressListener(){
                                 @Override
                                 public void onDownLoadProgress(String currentStep, long downProcess, File file) {
@@ -59,14 +59,10 @@ public class MainActivity extends AppCompatActivity {
                                         Log.d(TAG, "-----下载---"+downProcess + "%");
                                     }
                                 }
-
                             });
-
                         } catch (Exception e) {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
-
                     }
                 }).start();
 
