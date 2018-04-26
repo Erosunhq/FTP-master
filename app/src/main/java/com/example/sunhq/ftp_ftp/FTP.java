@@ -62,15 +62,13 @@ public class FTP {
 	 *            Ftp目录及文件路径
 	 * @param localPath
 	 *            本地目录
-	 * @param fileName       
-	 *            下载之后的文件名称
 	 * @param listener
 	 *            监听器
 	 * @throws IOException
 	 */
     //下面的 serverPath   如果路径是文件，只会返回一个长度为1的数组。
     //如果该路径为文件夹，则会返回该文件夹下对应的所有文件。
-	public void downloadSingleFile(String serverPath, String localPath, String fileName, DownLoadProgressListener listener)
+	public void downloadSingleFile(String serverPath, String localPath, DownLoadProgressListener listener)
 			throws Exception {
 
 		// 打开FTP服务
@@ -90,12 +88,7 @@ public class FTP {
 		if (files.length == 0) {
 			listener.onDownLoadProgress(MainActivity.FTP_FILE_NOTEXISTS, 0, null);
 			return;
-		}else{
-			for (FTPFile file : files) {
-				System.out.println(file.getName());
-			}
 		}
-
 
 		//创建本地文件夹
 		File mkFile = new File(localPath);
@@ -103,7 +96,10 @@ public class FTP {
 			mkFile.mkdirs();
 		}
 
-		localPath = localPath + fileName;
+
+
+		//下载后存储到本地的绝对路径以及文件名,文件名是服务器上图片的原文件名
+		localPath = localPath + files[0].getName();
 		// 接着判断下载的文件是否能断点下载
 		long serverSize = files[0].getSize(); // 获取远程文件的长度
 		File localFile = new File(localPath);
@@ -165,7 +161,7 @@ public class FTP {
 	 */
 	public void openConnect() throws IOException {
 		// 中文转码
-		ftpClient.setControlEncoding("GBK");  // 此处编码格式与服务器相同
+		ftpClient.setControlEncoding("GBK");
 		int reply; // 服务器响应值
 		// 连接至服务器
 		ftpClient.connect(hostName, serverPort);
