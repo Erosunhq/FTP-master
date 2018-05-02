@@ -7,18 +7,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 public class FTP {
-	/** 本地字符编码 */
-	private static String LOCAL_CHARSET = "GBK";
 
-	// FTP协议里面，规定文件名编码为iso-8859-1
-	private static String SERVER_CHARSET = "ISO-8859-1";
 
+	FTPFile[] files;
 	/**
 	 * 服务器名.
 	 */
@@ -45,7 +45,7 @@ public class FTP {
 	private FTPClient ftpClient;
 
 	public FTP() {
-		this.hostName = "192.168.1.101";
+		this.hostName = "192.168.1.100";
 		this.serverPort = 2121;
 		this.userName = "sunhq";
 		this.password = "1234";
@@ -54,6 +54,34 @@ public class FTP {
 	}
 
 	// -------------------------------------------------------文件下载方法------------------------------------------------
+
+	// 打开FTP服务以及判断服务器文件是否存在
+	public String[] JudgeFile(String serverPathLists){
+		List<String> list = new ArrayList<String>();
+
+    	// 打开FTP服务
+		try {
+
+			this.openConnect();
+
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		// 先判断服务器文件是否存在
+		try {
+			files = ftpClient.listFiles(serverPathLists);
+			for(int i = 0; i < files.length;i++){
+				list.add(files[i].getName());
+				//System.out.println(serverPath[i]);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		String serverPath[] = new String[list.size()];
+		serverPath = list.toArray(serverPath);
+		return serverPath;
+	}
+
 
 	/**
 	 * 下载单个文件，可实现断点下载.
@@ -68,7 +96,7 @@ public class FTP {
 	 */
     //下面的 serverPath   如果路径是文件，只会返回一个长度为1的数组。
     //如果该路径为文件夹，则会返回该文件夹下对应的所有文件。
-	public void downloadSingleFile(String serverPath, String localPath, DownLoadProgressListener listener)
+	public void downloadSingleFile(String serverPath, String localPath, String name , DownLoadProgressListener listener)
 			throws Exception {
 
 		// 打开FTP服务
@@ -82,13 +110,6 @@ public class FTP {
 			return;
 		}
 
-        //ftpClient.enterLocalPassiveMode();
-		// 先判断服务器文件是否存在
-		FTPFile[] files = ftpClient.listFiles(serverPath);//对serverPath进行编码转换
-		if (files.length == 0) {
-			listener.onDownLoadProgress(MainActivity.FTP_FILE_NOTEXISTS, 0, null);
-			return;
-		}
 
 		//创建本地文件夹
 		File mkFile = new File(localPath);
@@ -99,9 +120,11 @@ public class FTP {
 
 
 		//下载后存储到本地的绝对路径以及文件名,文件名是服务器上图片的原文件名
-		localPath = localPath + files[0].getName();
+		localPath = localPath + name;
 		// 接着判断下载的文件是否能断点下载
+		files = ftpClient.listFiles(serverPath);
 		long serverSize = files[0].getSize(); // 获取远程文件的长度
+		//long serverSize = 207741; // 获取远程文件的长度
 		File localFile = new File(localPath);
 		long localSize = 0;
 		if (localFile.exists()) {
@@ -128,7 +151,7 @@ public class FTP {
 			currentSize = currentSize + length;
 			if (currentSize / step != process) {
 				process = currentSize / step;
-				if (process % 5 == 0) {  //每隔%5的进度返回一次
+				if (process % 20 == 0) {  //每隔%5的进度返回一次
 					listener.onDownLoadProgress(MainActivity.FTP_DOWN_LOADING, process, null);
 				}
 			}
@@ -216,6 +239,7 @@ public class FTP {
 	 */
 	public interface DownLoadProgressListener {
 		public void onDownLoadProgress(String currentStep, long downProcess, File file);
+
 		//待修改
 	}
 
