@@ -50,7 +50,7 @@ public class FTP {
 		this.userName = "sunhq";
 		this.password = "1234";
 		this.ftpClient = new FTPClient();
-		ftpClient.setConnectTimeout(2000);  //设置两秒钟超时,未连接上就表示超时,给出提示
+		ftpClient.setConnectTimeout(10000);  //设置十秒钟超时,未连接上就表示超时,给出提示
 	}
 
 	// -------------------------------------------------------文件下载方法------------------------------------------------
@@ -124,7 +124,7 @@ public class FTP {
 		// 接着判断下载的文件是否能断点下载
 		files = ftpClient.listFiles(serverPath);
 		long serverSize = files[0].getSize(); // 获取远程文件的长度
-		//long serverSize = 207741; // 获取远程文件的长度
+
 		File localFile = new File(localPath);
 		long localSize = 0;
 		if (localFile.exists()) {

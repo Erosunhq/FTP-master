@@ -25,6 +25,14 @@ public class MainActivity extends AppCompatActivity {
     public static final String FTP_DOWN_SUCCESS = "ftp 文件下载成功";
     public static final String FTP_DOWN_FAIL = "ftp 文件下载失败";
 
+
+    // 定义文件的存取路径(分类存放在不同的文件夹下面)
+    public static final String HOME_SHOW = "/FTP/images/";  //家装展示图片路径
+    public static final String CORPORATE_HONOR = "/FTP/image/";  //企业荣誉
+    public static final String ENGINEERING_CASE = "/FTP/images/";  //工程案列
+
+    // **********************************************
+
     // 创建线程池对内存进行优化处理
     private ExecutorService executorService;
 
@@ -80,19 +88,16 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         // 下载
                         try {
-                            String[] serverPath =  new FTP().JudgeFile("/FTP/");  // 服务端的文件路径
+                            String[] serverPath =  new FTP().JudgeFile(HOME_SHOW);  // 服务端的文件路径
                             for (int i = 0; i<serverPath.length;i++){
                                 //单文件下载 (服务器上文件的路径, 存放的本地路径, 下载到本地后要保存的文件名称(可以跟源文件名不一样), 下载监听器)
-                                new FTP().downloadSingleFile("/FTP/"+serverPath[i],"/mnt/sdcard/sunhq/",serverPath[i],new FTP.DownLoadProgressListener(){
-                                    //new FTP().downloadSingleFile("/FTP/a2.JPG","/mnt/sdcard/sunhq/","back11.JPG",new FTP.DownLoadProgressListener(){
+                                new FTP().downloadSingleFile(HOME_SHOW+serverPath[i],"/mnt/sdcard/sunhq/",serverPath[i],new FTP.DownLoadProgressListener(){
                                     @Override
                                     public void onDownLoadProgress(String currentStep, long downProcess, File file) {
                                         Log.d(TAG, currentStep);
                                         if(currentStep.equals(MainActivity.FTP_DOWN_SUCCESS)){
-                                            long consumingTime = System.currentTimeMillis() - startTime;
-                                            Log.d(TAG, "-----下载--成功,耗时 "+consumingTime);
+                                            Log.d(TAG, "-----下载--成功");
                                         } else if(currentStep.equals(MainActivity.FTP_DOWN_LOADING)){
-                                            startTime = System.currentTimeMillis();
                                             Log.d(TAG, "-----下载---"+downProcess + "%");
 
                                         }
